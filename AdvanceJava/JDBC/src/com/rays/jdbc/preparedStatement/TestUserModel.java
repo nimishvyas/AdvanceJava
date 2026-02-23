@@ -6,6 +6,7 @@ import java.util.List;
 
 public class TestUserModel {
 
+	
 	public static void main(String[] args) throws Exception {
 		//testadd();
 		//testAuthenticate();
@@ -38,11 +39,11 @@ public class TestUserModel {
 		while(it.hasNext()) {
 			bean = it.next();
 			System.out.print(bean.getId());
-			System.out.print("\t"+bean.getFirstName());
-			System.out.print("\t"+bean.getLastName());
-			System.out.print("\t"+bean.getLogin());
-			System.out.print("\t"+bean.getPassword());
-			System.out.println("\t"+bean.getDob());
+			System.out.println(bean.getFirstName());
+			System.out.println(bean.getLastName());
+			System.out.println(bean.getLogin());
+			System.out.println(bean.getPassword());
+			System.out.println(bean.getDob());
 			
 		}
 		
@@ -77,6 +78,5 @@ public class TestUserModel {
 		model.add(bean);
 		
 	}
-	
 	
 }

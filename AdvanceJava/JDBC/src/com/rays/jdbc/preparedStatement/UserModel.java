@@ -8,15 +8,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
+import com.jdbc.util.JDBCDataSource;
 import com.rays.jdbc.exception.DuplicateRecordException;
 
 public class UserModel {
-
+	
+	ResourceBundle rb = ResourceBundle.getBundle("com.rays.jdbc.bundle.app");
+	String url = rb.getString("url");
+	String driver = rb.getString("driver");
+	String username = rb.getString("username");
+	String password = rb.getString("password");
+	
+	
 	public int add(UserBean bean) throws Exception {
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/user", "root", "root");
+		Connection conn = JDBCDataSource.getConnection();
 		
 		PreparedStatement pstmt = conn.prepareStatement("insert into st_user values(?, ?, ?, ?, ?, ?)");
 		
@@ -43,9 +50,7 @@ public class UserModel {
 	}
 	
 	public void update(UserBean bean) throws Exception {
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/user", "root", "root");
+		Connection conn = JDBCDataSource.getConnection();
 		
 		PreparedStatement pstmt = conn.prepareStatement("update st_user set firstName = ?, lastName= ?, login = ?, password = ?, dob = ? where id = ?");
 		pstmt.setString(1, bean.getFirstName());
@@ -61,8 +66,7 @@ public class UserModel {
 	}
 	
 	public void delete(UserBean bean) throws Exception{
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/user", "root", "root");
+		Connection conn = JDBCDataSource.getConnection();
 		
 		PreparedStatement pstmt = conn.prepareStatement("delete from st_user where id= ?");
 		pstmt.setInt(1, bean.getId());
@@ -74,8 +78,7 @@ public class UserModel {
 	
 	public UserBean findByLogin(String login) throws Exception {
 		
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/user", "root", "root");
+		Connection conn = JDBCDataSource.getConnection();
 		
 		PreparedStatement pstmt = conn.prepareStatement("select * from st_user where login= ?");
 		
@@ -98,8 +101,7 @@ public class UserModel {
 	
 	public UserBean authenticate(String login, String password) throws Exception {
 		
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/user", "root", "root");
+		Connection conn = JDBCDataSource.getConnection();
 		
 		PreparedStatement pstmt = conn.prepareStatement("select * from st_user where login= ? and password = ?");
 		
@@ -123,8 +125,7 @@ public class UserModel {
 	
 	public UserBean findByPk(int id) throws Exception {
 		
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/user", "root", "root");
+		Connection conn = JDBCDataSource.getConnection();
 		
 		PreparedStatement pstmt = conn.prepareStatement("select * from st_user where id= ?");
 		
@@ -147,10 +148,24 @@ public class UserModel {
 	
 	public List<UserBean> search(UserBean bean) throws Exception {
 		
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/user", "root", "root");
+		Connection conn = JDBCDataSource.getConnection();
 		
-		PreparedStatement pstmt = conn.prepareStatement("select * from st_user");
+		StringBuffer sql = new StringBuffer("select * from st_user where 1=1");
+		
+		if (bean != null) {
+			if (bean.getFirstName() != null && bean.getFirstName().length() > 0) {
+				sql.append("and firstName like '" + bean.getFirstName() + "%'");
+			}
+			if (bean.getLastName() != null && bean.getLastName().length() > 0 ) {
+				sql.append("and lastName like '" + bean.getLastName()+ "%'");
+			}
+			if (bean.getLogin() != null && bean.getLogin().length() >0) {
+				sql.append("and login like '" + bean.getLogin()+ "%'");
+			}
+		}
+		
+		
+		PreparedStatement pstmt = conn.prepareStatement(sql.toString());
 		
 		ResultSet rs = pstmt.executeQuery();
 		
